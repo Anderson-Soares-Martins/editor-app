@@ -1,0 +1,272 @@
+.panel {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  width: 260px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background-color: var(--bg-tertiary);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.status {
+  margin-left: auto;
+}
+
+.connected {
+  color: #4ecdc4;
+}
+
+.disconnected {
+  color: #ff6b6b;
+}
+
+.loading {
+  color: var(--accent-color);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.content {
+  padding: 12px;
+}
+
+.error {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px;
+  margin-bottom: 12px;
+  background-color: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  border-radius: 6px;
+  color: #ff6b6b;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.error svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.roomInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+  padding: 10px;
+  background-color: var(--bg-tertiary);
+  border-radius: 6px;
+}
+
+.label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.roomId {
+  font-size: 13px;
+  color: var(--text-primary);
+  font-family: monospace;
+  word-break: break-all;
+}
+
+.copyButtons {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.copyButton {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.copyButton:hover {
+  background-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.copyButton svg {
+  flex-shrink: 0;
+}
+
+.collaborators {
+  margin-bottom: 12px;
+}
+
+.collaborators .label {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.userList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-primary);
+}
+
+.userAvatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: white;
+}
+
+.joinSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.inputWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.input {
+  width: 100%;
+  padding: 10px 12px;
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 12px;
+}
+
+.input::placeholder {
+  color: var(--text-secondary);
+}
+
+.input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.extractedHint {
+  font-size: 11px;
+  color: var(--accent-color);
+  padding: 0 4px;
+}
+
+.extractedHint strong {
+  font-family: monospace;
+}
+
+.joinButton,
+.createButton,
+.leaveButton {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.joinButton {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+.joinButton:hover:not(:disabled) {
+  background-color: var(--accent-hover);
+}
+
+.joinButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.createButton {
+  width: 100%;
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.createButton:hover:not(:disabled) {
+  background-color: var(--border-color);
+}
+
+.createButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.leaveButton {
+  width: 100%;
+  background-color: transparent;
+  color: #ff6b6b;
+  border: 1px solid #ff6b6b;
+}
+
+.leaveButton:hover {
+  background-color: rgba(255, 107, 107, 0.1);
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0;
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background-color: var(--border-color);
+}
