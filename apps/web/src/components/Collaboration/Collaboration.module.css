@@ -1,32 +1,37 @@
+/* ========================================
+   COLLABORATION PANEL
+   ======================================== */
+
 .panel {
   background-color: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
   overflow: hidden;
-  width: 260px;
+  width: 100%;
 }
 
 .header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
   background-color: var(--bg-tertiary);
-  font-size: 13px;
+  font-size: var(--text-md);
   font-weight: 500;
   color: var(--text-primary);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .status {
   margin-left: auto;
+  display: flex;
+  align-items: center;
 }
 
 .connected {
-  color: #4ecdc4;
+  color: var(--success-color);
 }
 
 .disconnected {
-  color: #ff6b6b;
+  color: var(--error-color);
 }
 
 .loading {
@@ -44,56 +49,76 @@
 }
 
 .content {
-  padding: 12px;
+  padding: var(--space-3);
 }
+
+/* ========================================
+   ERROR STATE
+   ======================================== */
 
 .error {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
-  padding: 10px;
-  margin-bottom: 12px;
-  background-color: rgba(255, 107, 107, 0.1);
-  border: 1px solid rgba(255, 107, 107, 0.3);
-  border-radius: 6px;
-  color: #ff6b6b;
-  font-size: 12px;
-  line-height: 1.4;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  margin-bottom: var(--space-3);
+  background-color: var(--error-subtle);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  border-radius: var(--radius-md);
+  color: var(--error-color);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  animation: shakeIn 0.3s ease;
+}
+
+@keyframes shakeIn {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
 }
 
 .error svg {
   flex-shrink: 0;
-  margin-top: 1px;
+  margin-top: 2px;
 }
+
+/* ========================================
+   ROOM INFO
+   ======================================== */
 
 .roomInfo {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  margin-bottom: 12px;
-  padding: 10px;
+  gap: var(--space-1);
+  margin-bottom: var(--space-3);
+  padding: var(--space-3);
   background-color: var(--bg-tertiary);
-  border-radius: 6px;
+  border-radius: var(--radius-md);
 }
 
 .label {
-  font-size: 11px;
-  color: var(--text-secondary);
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  font-weight: 500;
 }
 
 .roomId {
-  font-size: 13px;
+  font-size: var(--text-md);
   color: var(--text-primary);
-  font-family: monospace;
+  font-family: var(--font-mono);
   word-break: break-all;
 }
 
+/* ========================================
+   COPY BUTTONS
+   ======================================== */
+
 .copyButtons {
   display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
 }
 
 .copyButton {
@@ -101,125 +126,195 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 8px 12px;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
   background-color: var(--bg-tertiary);
   border: 1px solid var(--border-color);
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   color: var(--text-secondary);
-  font-size: 12px;
+  font-size: var(--text-base);
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--transition-base);
 }
 
 .copyButton:hover {
-  background-color: var(--border-color);
+  background-color: var(--bg-elevated);
   color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.copyButton:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+.copyButton:active {
+  transform: scale(0.98);
 }
 
 .copyButton svg {
   flex-shrink: 0;
+  transition: transform var(--transition-spring);
 }
 
+.copyButton:has(svg:first-child:last-of-type):hover svg {
+  transform: scale(1.1);
+}
+
+/* ========================================
+   COLLABORATORS
+   ======================================== */
+
 .collaborators {
-  margin-bottom: 12px;
+  margin-bottom: var(--space-3);
 }
 
 .collaborators .label {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: var(--space-2);
 }
 
 .userList {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--space-2);
 }
 
 .user {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 12px;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  background-color: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  font-size: var(--text-base);
   color: var(--text-primary);
+  animation: slideIn 0.2s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .userAvatar {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
+  font-size: var(--text-sm);
   font-weight: 600;
   color: white;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
 }
+
+/* ========================================
+   JOIN SECTION
+   ======================================== */
 
 .joinSection {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .inputWrapper {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .input {
   width: 100%;
-  padding: 10px 12px;
+  padding: var(--space-3);
   background-color: var(--bg-tertiary);
   border: 1px solid var(--border-color);
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   color: var(--text-primary);
-  font-size: 12px;
+  font-size: var(--text-base);
+  transition: all var(--transition-base);
 }
 
 .input::placeholder {
-  color: var(--text-secondary);
+  color: var(--text-tertiary);
+}
+
+.input:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px var(--accent-subtle);
+  outline: none;
 }
 
 .input:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
 .extractedHint {
-  font-size: 11px;
+  font-size: var(--text-sm);
   color: var(--accent-color);
-  padding: 0 4px;
+  padding: 0 var(--space-1);
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .extractedHint strong {
-  font-family: monospace;
+  font-family: var(--font-mono);
 }
+
+/* ========================================
+   BUTTONS
+   ======================================== */
 
 .joinButton,
 .createButton,
 .leaveButton {
-  padding: 10px 16px;
+  padding: var(--space-3) var(--space-4);
   border: none;
-  border-radius: 6px;
-  font-size: 12px;
+  border-radius: var(--radius-md);
+  font-size: var(--text-base);
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.15s ease;
+  transition: all var(--transition-base);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: var(--space-2);
 }
 
 .joinButton {
   background-color: var(--accent-color);
   color: white;
+  box-shadow: var(--shadow-sm);
 }
 
 .joinButton:hover:not(:disabled) {
   background-color: var(--accent-hover);
+  box-shadow: var(--shadow-md);
+}
+
+.joinButton:active:not(:disabled) {
+  background-color: var(--accent-active);
+  transform: scale(0.98);
+}
+
+.joinButton:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
 }
 
 .joinButton:disabled {
@@ -235,7 +330,17 @@
 }
 
 .createButton:hover:not(:disabled) {
-  background-color: var(--border-color);
+  background-color: var(--bg-elevated);
+  border-color: var(--accent-color);
+}
+
+.createButton:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.createButton:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
 }
 
 .createButton:disabled {
@@ -246,21 +351,34 @@
 .leaveButton {
   width: 100%;
   background-color: transparent;
-  color: #ff6b6b;
-  border: 1px solid #ff6b6b;
+  color: var(--error-color);
+  border: 1px solid var(--error-color);
 }
 
 .leaveButton:hover {
-  background-color: rgba(255, 107, 107, 0.1);
+  background-color: var(--error-subtle);
 }
+
+.leaveButton:active {
+  transform: scale(0.98);
+}
+
+.leaveButton:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--error-subtle), 0 0 0 4px var(--error-color);
+}
+
+/* ========================================
+   DIVIDER
+   ======================================== */
 
 .divider {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin: 12px 0;
-  color: var(--text-secondary);
-  font-size: 11px;
+  gap: var(--space-3);
+  margin: var(--space-3) 0;
+  color: var(--text-tertiary);
+  font-size: var(--text-sm);
 }
 
 .divider::before,
@@ -269,4 +387,133 @@
   flex: 1;
   height: 1px;
   background-color: var(--border-color);
+}
+
+/* ========================================
+   ENHANCED ANIMATIONS
+   ======================================== */
+
+/* Panel entrance */
+.panel {
+  animation: fadeIn 0.25s ease;
+}
+
+/* Header with icon animation */
+.header svg {
+  transition: transform var(--transition-spring);
+}
+
+.header:hover svg:not(.status svg) {
+  transform: rotate(15deg) scale(1.1);
+}
+
+/* Status indicator animations */
+.connected {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.disconnected {
+  animation: shake 0.5s ease;
+}
+
+/* Room info reveal */
+.roomInfo {
+  animation: scaleIn 0.2s ease;
+}
+
+/* Room ID hover highlight */
+.roomId {
+  transition: color var(--transition-base), background-color var(--transition-base);
+  padding: var(--space-1);
+  margin: calc(-1 * var(--space-1));
+  border-radius: var(--radius-sm);
+}
+
+.roomId:hover {
+  background-color: var(--bg-elevated);
+  color: var(--accent-color);
+}
+
+/* Copy button feedback */
+.copyButton svg {
+  transition: transform var(--transition-spring);
+}
+
+.copyButton:active svg {
+  transform: scale(0.8);
+}
+
+/* Success state after copy */
+.copyButton.copied {
+  background-color: var(--success-subtle);
+  border-color: var(--success-color);
+  color: var(--success-color);
+}
+
+.copyButton.copied svg {
+  animation: popIn 0.3s ease;
+}
+
+/* User list staggered animation */
+.user {
+  animation: slideIn 0.25s ease;
+  animation-fill-mode: both;
+}
+
+.user:nth-child(1) { animation-delay: 0.03s; }
+.user:nth-child(2) { animation-delay: 0.06s; }
+.user:nth-child(3) { animation-delay: 0.09s; }
+.user:nth-child(4) { animation-delay: 0.12s; }
+.user:nth-child(5) { animation-delay: 0.15s; }
+
+/* User avatar hover */
+.userAvatar {
+  transition: transform var(--transition-spring), box-shadow var(--transition-base);
+}
+
+.user:hover .userAvatar {
+  transform: scale(1.15);
+  box-shadow: var(--shadow-md);
+}
+
+/* Join section entrance */
+.joinSection {
+  animation: fadeInUp 0.3s ease;
+}
+
+/* Input focus animation */
+.input:focus {
+  animation: scaleIn 0.15s ease;
+}
+
+/* Button hover lift effect */
+.joinButton,
+.createButton {
+  transition: all var(--transition-base), transform var(--transition-spring);
+}
+
+.joinButton:hover:not(:disabled),
+.createButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+/* Leave button danger animation */
+.leaveButton:hover {
+  animation: shake 0.4s ease;
+}
+
+/* Extracted hint typing effect */
+.extractedHint {
+  animation: fadeInUp 0.2s ease;
+}
+
+/* Divider line animation */
+.divider::before,
+.divider::after {
+  transition: background-color var(--transition-base);
+}
+
+.divider:hover::before,
+.divider:hover::after {
+  background-color: var(--text-tertiary);
 }

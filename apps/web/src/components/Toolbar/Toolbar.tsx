@@ -35,9 +35,36 @@ function ToolButton({ tool, icon, label, shortcut }: ToolButtonProps) {
     <button
       className={`${styles.toolButton} ${isActive ? styles.active : ''}`}
       onClick={() => setTool(tool)}
-      title={`${label}${shortcut ? ` (${shortcut})` : ''}`}
+      data-tooltip={`${label}${shortcut ? ` (${shortcut})` : ''}`}
+      aria-label={`${label}${shortcut ? `, shortcut ${shortcut}` : ''}`}
+      aria-pressed={isActive}
+      role="button"
     >
       {icon}
+    </button>
+  );
+}
+
+interface ActionButtonProps {
+  icon: React.ReactNode;
+  label: string;
+  shortcut?: string;
+  onClick: () => void;
+  disabled?: boolean;
+  children?: React.ReactNode;
+}
+
+function ActionButton({ icon, label, shortcut, onClick, disabled, children }: ActionButtonProps) {
+  return (
+    <button
+      className={styles.toolButton}
+      onClick={onClick}
+      disabled={disabled}
+      data-tooltip={`${label}${shortcut ? ` (${shortcut})` : ''}`}
+      aria-label={`${label}${shortcut ? `, shortcut ${shortcut}` : ''}`}
+    >
+      {icon}
+      {children}
     </button>
   );
 }
@@ -61,8 +88,8 @@ export function Toolbar() {
   };
 
   return (
-    <div className={styles.toolbar}>
-      <div className={styles.section}>
+    <nav className={styles.toolbar} role="toolbar" aria-label="Canvas tools">
+      <div className={styles.section} role="group" aria-label="Selection tools">
         <ToolButton
           tool="select"
           icon={<MousePointer2 size={18} />}
@@ -77,9 +104,9 @@ export function Toolbar() {
         />
       </div>
 
-      <div className={styles.divider} />
+      <div className={styles.divider} role="separator" aria-hidden="true" />
 
-      <div className={styles.section}>
+      <div className={styles.section} role="group" aria-label="Shape tools">
         <ToolButton
           tool="rectangle"
           icon={<Square size={18} />}
@@ -112,81 +139,76 @@ export function Toolbar() {
         />
       </div>
 
-      <div className={styles.divider} />
+      <div className={styles.divider} role="separator" aria-hidden="true" />
 
-      <div className={styles.section}>
+      <div className={styles.section} role="group" aria-label="Color controls">
         <ColorPicker type="fill" />
         <ColorPicker type="stroke" />
       </div>
 
       <div className={styles.spacer} />
 
-      <div className={styles.section}>
-        <button
-          className={styles.toolButton}
+      <div className={styles.section} role="group" aria-label="History">
+        <ActionButton
+          icon={<Undo2 size={18} />}
+          label="Undo"
+          shortcut="⌘Z"
           onClick={undo}
           disabled={!canUndo()}
-          title="Undo (Ctrl+Z)"
-        >
-          <Undo2 size={18} />
-        </button>
-        <button
-          className={styles.toolButton}
+        />
+        <ActionButton
+          icon={<Redo2 size={18} />}
+          label="Redo"
+          shortcut="⌘⇧Z"
           onClick={redo}
           disabled={!canRedo()}
-          title="Redo (Ctrl+Shift+Z)"
-        >
-          <Redo2 size={18} />
-        </button>
+        />
       </div>
 
-      <div className={styles.divider} />
+      <div className={styles.divider} role="separator" aria-hidden="true" />
 
-      <div className={styles.section}>
-        <button
-          className={styles.toolButton}
+      <div className={styles.section} role="group" aria-label="Zoom controls">
+        <ActionButton
+          icon={<ZoomOut size={18} />}
+          label="Zoom Out"
+          shortcut="-"
           onClick={handleZoomOut}
-          title="Zoom Out"
-        >
-          <ZoomOut size={18} />
-        </button>
-        <span className={styles.zoomLevel}>{Math.round(viewport.scale * 100)}%</span>
-        <button
-          className={styles.toolButton}
+        />
+        <span className={styles.zoomLevel} aria-live="polite" aria-label={`Zoom level ${Math.round(viewport.scale * 100)} percent`}>
+          {Math.round(viewport.scale * 100)}%
+        </span>
+        <ActionButton
+          icon={<ZoomIn size={18} />}
+          label="Zoom In"
+          shortcut="+"
           onClick={handleZoomIn}
-          title="Zoom In"
-        >
-          <ZoomIn size={18} />
-        </button>
-        <button
-          className={styles.toolButton}
+        />
+        <ActionButton
+          icon={<Maximize size={18} />}
+          label="Fit to Screen"
+          shortcut="⌘0"
           onClick={handleFitToScreen}
-          title="Fit to Screen"
-        >
-          <Maximize size={18} />
-        </button>
+        />
       </div>
 
-      <div className={styles.divider} />
+      <div className={styles.divider} role="separator" aria-hidden="true" />
 
-      <div className={styles.section}>
-        <button
-          className={styles.toolButton}
+      <div className={styles.section} role="group" aria-label="Export">
+        <ActionButton
+          icon={<Download size={18} />}
+          label="Export as PNG"
           onClick={exportToPNG}
-          title="Export as PNG"
         >
-          <Download size={18} />
           <span className={styles.buttonLabel}>PNG</span>
-        </button>
-        <button
-          className={styles.toolButton}
+        </ActionButton>
+        <ActionButton
+          icon={<Download size={18} />}
+          label="Export as SVG"
           onClick={exportToSVG}
-          title="Export as SVG"
         >
-          <Download size={18} />
           <span className={styles.buttonLabel}>SVG</span>
-        </button>
+        </ActionButton>
       </div>
-    </div>
+    </nav>
   );
 }

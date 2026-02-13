@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import { Transformer } from 'react-konva';
 import type Konva from 'konva';
 import { useCanvasStore } from '@/store';
@@ -15,6 +15,22 @@ export function SelectionTransformer({
 }: SelectionTransformerProps) {
   const transformerRef = useRef<Konva.Transformer>(null);
   const { updateShape } = useCanvasStore();
+  const [shiftHeld, setShiftHeld] = useState(false);
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Shift') setShiftHeld(true);
+    };
+    const onKeyUp = (e: KeyboardEvent) => {
+      if (e.key === 'Shift') setShiftHeld(false);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('keyup', onKeyUp);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('keyup', onKeyUp);
+    };
+  }, []);
 
   useEffect(() => {
     if (!transformerRef.current || !stageRef.current) return;
@@ -86,6 +102,7 @@ export function SelectionTransformer({
   return (
     <Transformer
       ref={transformerRef}
+      keepRatio={shiftHeld}
       boundBoxFunc={(oldBox, newBox) => {
         if (newBox.width < 5 || newBox.height < 5) {
           return oldBox;

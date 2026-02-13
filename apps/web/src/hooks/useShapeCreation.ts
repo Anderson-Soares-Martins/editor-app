@@ -1,13 +1,12 @@
 import { useState, useCallback, useRef } from 'react';
 import type Konva from 'konva';
-import { useCanvasStore, useToolStore, useSelectionStore, useHistoryStore } from '@/store';
+import { useCanvasStore, useToolStore, useSelectionStore } from '@/store';
 import type { Shape, RectangleShape, CircleShape, LineShape, TextShape } from '@editor-app/shared';
 
 export function useShapeCreation(stageRef: React.RefObject<Konva.Stage | null>) {
-  const { shapes, layers, addShape } = useCanvasStore();
+  const { shapes, addShape } = useCanvasStore();
   const { activeTool, fillColor, strokeColor, strokeWidth, fontSize, fontFamily } = useToolStore();
   const { selectMultiple } = useSelectionStore();
-  const { pushState } = useHistoryStore();
 
   const [isDrawing, setIsDrawing] = useState(false);
   const [previewShape, setPreviewShape] = useState<Shape | null>(null);
@@ -43,9 +42,6 @@ export function useShapeCreation(stageRef: React.RefObject<Konva.Stage | null>) 
 
       startPosRef.current = pos;
       setIsDrawing(true);
-
-      // Save state for undo
-      pushState(shapes, layers);
 
       const baseShape = {
         x: pos.x,
@@ -161,9 +157,6 @@ export function useShapeCreation(stageRef: React.RefObject<Konva.Stage | null>) 
     [
       activeTool,
       getPointerPosition,
-      pushState,
-      shapes,
-      layers,
       fillColor,
       strokeColor,
       strokeWidth,

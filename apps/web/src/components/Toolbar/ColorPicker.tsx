@@ -46,27 +46,36 @@ export function ColorPicker({ type }: ColorPickerProps) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isOpen]);
 
+  const label = type === 'fill' ? 'Fill' : 'Stroke';
+
   return (
     <div className={styles.container} ref={containerRef}>
       <button
         className={styles.trigger}
         onClick={() => setIsOpen(!isOpen)}
-        title={type === 'fill' ? 'Fill Color' : 'Stroke Color'}
+        aria-label={`${label} color: ${color}`}
+        aria-expanded={isOpen}
+        aria-haspopup="true"
       >
         <div
           className={styles.colorPreview}
           style={{ backgroundColor: color }}
+          aria-hidden="true"
         >
           {type === 'stroke' && (
             <div className={styles.strokeIndicator} />
           )}
         </div>
-        <span className={styles.label}>{type === 'fill' ? 'Fill' : 'Stroke'}</span>
+        <span className={styles.label}>{label}</span>
       </button>
 
       {isOpen && (
-        <div className={styles.dropdown}>
-          <div className={styles.presetColors}>
+        <div
+          className={styles.dropdown}
+          role="dialog"
+          aria-label={`${label} color picker`}
+        >
+          <div className={styles.presetColors} role="listbox" aria-label="Preset colors">
             {PRESET_COLORS.map((presetColor) => (
               <button
                 key={presetColor}
@@ -76,21 +85,28 @@ export function ColorPicker({ type }: ColorPickerProps) {
                   setColor(presetColor);
                   setIsOpen(false);
                 }}
+                aria-label={`Color ${presetColor}`}
+                aria-selected={color === presetColor}
+                role="option"
               />
             ))}
           </div>
           <div className={styles.customColor}>
-            <label>Custom:</label>
+            <label htmlFor={`${type}-color-picker`}>Custom:</label>
             <input
+              id={`${type}-color-picker`}
               type="color"
               value={color}
               onChange={(e) => setColor(e.target.value)}
+              aria-label="Custom color picker"
             />
             <input
               type="text"
               value={color}
               onChange={(e) => setColor(e.target.value)}
               className={styles.hexInput}
+              aria-label="Hex color value"
+              placeholder="#000000"
             />
           </div>
         </div>
