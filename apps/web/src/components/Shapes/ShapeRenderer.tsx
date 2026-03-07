@@ -11,12 +11,14 @@ interface ShapeRendererProps {
   isSelected: boolean;
   onClick: (e: Konva.KonvaEventObject<MouseEvent>) => void;
   onDragEnd: (e: Konva.KonvaEventObject<DragEvent>) => void;
+  onDragMove?: (e: Konva.KonvaEventObject<DragEvent>) => void;
 }
 
 export function ShapeRenderer({
   shape,
   onClick,
   onDragEnd,
+  onDragMove,
 }: ShapeRendererProps) {
   const commonProps = {
     id: shape.id,
@@ -30,6 +32,7 @@ export function ShapeRenderer({
     onClick,
     onTap: onClick,
     onDragEnd,
+    onDragMove,
   };
 
   switch (shape.type) {

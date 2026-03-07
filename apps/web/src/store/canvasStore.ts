@@ -272,7 +272,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
 
   zoomTo: (scale, centerX, centerY) => {
     set((state) => {
-      const clampedScale = Math.min(Math.max(scale, 0.1), 10);
+      const clampedScale = Math.min(Math.max(scale, 0.1), 200);
 
       if (centerX !== undefined && centerY !== undefined) {
         const scaleRatio = clampedScale / state.viewport.scale;

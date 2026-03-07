@@ -2,9 +2,11 @@ import { useRef, useCallback, useEffect, useState } from 'react';
 import { Stage, Layer } from 'react-konva';
 import type Konva from 'konva';
 import { useCanvasStore, useSelectionStore, useToolStore } from '@/store';
+import { snapPoint } from '@/utils/snap';
 import { ShapeRenderer } from '../Shapes/ShapeRenderer';
 import { SelectionTransformer } from './SelectionTransformer';
 import { SelectionBox } from './SelectionBox';
+import { PixelGrid } from './PixelGrid';
 import { UserCursors } from '../Collaboration/UserCursors';
 import { useShapeCreation } from '@/hooks/useShapeCreation';
 import { useCanvas } from '@/hooks/useCanvas';
@@ -19,10 +21,11 @@ export function Canvas({ onCursorMove }: CanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<Konva.Stage>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const rotationJustEndedRef = useRef(false);
 
   const { shapes, layers, viewport, updateShape } = useCanvasStore();
   const { selectedIds, clearSelection, selectionBox, selectMultiple } = useSelectionStore();
-  const { activeTool } = useToolStore();
+  const { activeTool, snapToGrid } = useToolStore();
 
   const {
     handleMouseDown: handleCreationMouseDown,
@@ -75,6 +78,10 @@ export function Canvas({ onCursorMove }: CanvasProps) {
 
   const handleStageClick = useCallback(
     (e: Konva.KonvaEventObject<MouseEvent>) => {
+      if (rotationJustEndedRef.current) {
+        rotationJustEndedRef.current = false;
+        return;
+      }
       if (e.target === e.target.getStage()) {
         clearSelection();
       }
@@ -103,14 +110,32 @@ export function Canvas({ onCursorMove }: CanvasProps) {
     [activeTool, selectedIds, selectMultiple]
   );
 
+  const handleShapeDragMove = useCallback(
+    (e: Konva.KonvaEventObject<DragEvent>) => {
+      if (snapToGrid && !e.evt.altKey) {
+        const node = e.target;
+        // Skip snap for rotated shapes
+        if (node.rotation() % 360 !== 0) return;
+        const snapped = snapPoint({ x: node.x(), y: node.y() });
+        node.x(snapped.x);
+        node.y(snapped.y);
+      }
+    },
+    [snapToGrid]
+  );
+
   const handleShapeDragEnd = useCallback(
     (e: Konva.KonvaEventObject<DragEvent>, shapeId: string) => {
-      updateShape(shapeId, {
-        x: e.target.x(),
-        y: e.target.y(),
-      });
+      let x = e.target.x();
+      let y = e.target.y();
+      if (snapToGrid && !e.evt.altKey && e.target.rotation() % 360 === 0) {
+        const snapped = snapPoint({ x, y });
+        x = snapped.x;
+        y = snapped.y;
+      }
+      updateShape(shapeId, { x, y });
     },
-    [updateShape]
+    [updateShape, snapToGrid]
   );
 
   const handleMouseDown = useCallback(
@@ -164,6 +189,7 @@ export function Canvas({ onCursorMove }: CanvasProps) {
       className={styles.container}
       style={{ cursor: cursorStyle }}
     >
+      <PixelGrid viewport={viewport} width={dimensions.width} height={dimensions.height} />
       <Stage
         ref={stageRef}
         width={dimensions.width}
@@ -191,6 +217,7 @@ export function Canvas({ onCursorMove }: CanvasProps) {
               isSelected={selectedIds.includes(shape.id)}
               onClick={(e) => handleShapeClick(e, shape.id)}
               onDragEnd={(e) => handleShapeDragEnd(e, shape.id)}
+              onDragMove={handleShapeDragMove}
             />
           ))}
           {previewShape && (
@@ -206,6 +233,9 @@ export function Canvas({ onCursorMove }: CanvasProps) {
           <SelectionTransformer
             selectedShapes={selectedShapes}
             stageRef={stageRef}
+            onRotationEnd={() => {
+              rotationJustEndedRef.current = true;
+            }}
           />
           {selectionBox && <SelectionBox box={selectionBox} />}
           <UserCursors />

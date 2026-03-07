@@ -4,7 +4,7 @@ import { useHistory } from './useHistory';
 import { useSelection } from './useSelection';
 
 export function useKeyboardShortcuts() {
-  const { setTool } = useToolStore();
+  const { setTool, snapToGrid, setSnapToGrid } = useToolStore();
   const { deleteShapes, duplicateShapes, viewport, zoomTo, fitToScreen } = useCanvasStore();
   const { selectedIds, clearSelection, selectMultiple } = useSelectionStore();
   const { undo, redo } = useHistory();
@@ -103,6 +103,10 @@ export function useKeyboardShortcuts() {
             e.preventDefault();
             zoomTo(viewport.scale / 1.25);
             break;
+          case "'":
+            e.preventDefault();
+            setSnapToGrid(!snapToGrid);
+            break;
         }
       }
     },
@@ -119,6 +123,8 @@ export function useKeyboardShortcuts() {
       viewport,
       zoomTo,
       fitToScreen,
+      snapToGrid,
+      setSnapToGrid,
     ]
   );
 

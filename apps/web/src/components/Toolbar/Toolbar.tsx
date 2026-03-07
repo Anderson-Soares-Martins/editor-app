@@ -12,6 +12,7 @@ import {
   ZoomIn,
   ZoomOut,
   Maximize,
+  Grid3X3,
 } from 'lucide-react';
 import { useToolStore, useHistoryStore, useCanvasStore } from '@/store';
 import { useHistory } from '@/hooks/useHistory';
@@ -74,6 +75,7 @@ export function Toolbar() {
   const { canUndo, canRedo } = useHistoryStore();
   const { exportToPNG, exportToSVG } = useExport();
   const { viewport, zoomTo, fitToScreen } = useCanvasStore();
+  const { snapToGrid, setSnapToGrid } = useToolStore();
 
   const handleZoomIn = () => {
     zoomTo(viewport.scale * 1.2);
@@ -189,6 +191,20 @@ export function Toolbar() {
           shortcut="⌘0"
           onClick={handleFitToScreen}
         />
+      </div>
+
+      <div className={styles.divider} role="separator" aria-hidden="true" />
+
+      <div className={styles.section} role="group" aria-label="Snap">
+        <button
+          className={`${styles.toolButton} ${snapToGrid ? styles.active : ''}`}
+          onClick={() => setSnapToGrid(!snapToGrid)}
+          data-tooltip={`Snap to Grid (${snapToGrid ? 'On' : 'Off'})`}
+          aria-label="Toggle snap to grid"
+          aria-pressed={snapToGrid}
+        >
+          <Grid3X3 size={18} />
+        </button>
       </div>
 
       <div className={styles.divider} role="separator" aria-hidden="true" />

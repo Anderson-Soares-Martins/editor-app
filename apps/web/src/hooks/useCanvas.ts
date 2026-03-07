@@ -37,7 +37,7 @@ export function useCanvas(stageRef: React.RefObject<Konva.Stage | null>) {
         // deltaY is negative when zooming in (fingers apart), positive when zooming out
         const zoomIntensity = 0.01;
         const delta = -e.deltaY * zoomIntensity;
-        const newScale = Math.max(0.1, Math.min(10, oldScale * (1 + delta)));
+        const newScale = Math.max(0.1, Math.min(200, oldScale * (1 + delta)));
 
         zoomTo(newScale, pointerX, pointerY);
       } else {
@@ -57,7 +57,7 @@ export function useCanvas(stageRef: React.RefObject<Konva.Stage | null>) {
       const gestureEvent = e as unknown as { scale: number; clientX: number; clientY: number };
 
       if (gestureEvent.scale) {
-        const newScale = Math.max(0.1, Math.min(10, lastGestureScale.current * gestureEvent.scale));
+        const newScale = Math.max(0.1, Math.min(200, lastGestureScale.current * gestureEvent.scale));
 
         const stageBox = container.getBoundingClientRect();
         const zoomPointX = gestureEvent.clientX - stageBox.left;
@@ -144,7 +144,7 @@ export function useCanvas(stageRef: React.RefObject<Konva.Stage | null>) {
         // Calculate zoom
         const scale = newDistance / lastTouchDistance.current;
         const oldScale = viewport.scale;
-        const newScale = Math.max(0.1, Math.min(10, oldScale * scale));
+        const newScale = Math.max(0.1, Math.min(200, oldScale * scale));
 
         // Get stage position for zoom center calculation
         const stageBox = stage.container().getBoundingClientRect();

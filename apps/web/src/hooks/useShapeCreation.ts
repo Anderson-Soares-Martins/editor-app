@@ -1,16 +1,34 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import type Konva from 'konva';
 import { useCanvasStore, useToolStore, useSelectionStore } from '@/store';
 import type { Shape, RectangleShape, CircleShape, LineShape, TextShape } from '@editor-app/shared';
+import { snapPoint } from '@/utils/snap';
 
 export function useShapeCreation(stageRef: React.RefObject<Konva.Stage | null>) {
   const { shapes, addShape } = useCanvasStore();
-  const { activeTool, fillColor, strokeColor, strokeWidth, fontSize, fontFamily } = useToolStore();
+  const { activeTool, setTool, fillColor, strokeColor, strokeWidth, fontSize, fontFamily, snapToGrid } = useToolStore();
   const { selectMultiple } = useSelectionStore();
 
   const [isDrawing, setIsDrawing] = useState(false);
   const [previewShape, setPreviewShape] = useState<Shape | null>(null);
   const startPosRef = useRef<{ x: number; y: number } | null>(null);
+
+  const altHeldRef = useRef(false);
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Alt') altHeldRef.current = true;
+    };
+    const onKeyUp = (e: KeyboardEvent) => {
+      if (e.key === 'Alt') altHeldRef.current = false;
+    };
+    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('keyup', onKeyUp);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('keyup', onKeyUp);
+    };
+  }, []);
 
   const getPointerPosition = useCallback((): { x: number; y: number } | null => {
     const stage = stageRef.current;
@@ -22,11 +40,16 @@ export function useShapeCreation(stageRef: React.RefObject<Konva.Stage | null>) 
     const scale = stage.scaleX();
     const stagePos = stage.position();
 
-    return {
+    const worldPos = {
       x: (pos.x - stagePos.x) / scale,
       y: (pos.y - stagePos.y) / scale,
     };
-  }, [stageRef]);
+
+    if (snapToGrid && !altHeldRef.current) {
+      return snapPoint(worldPos);
+    }
+    return worldPos;
+  }, [stageRef, snapToGrid]);
 
   const getShapeCount = useCallback((type: string) => {
     return Object.values(shapes).filter((s) => s.type === type).length + 1;
@@ -117,6 +140,7 @@ export function useShapeCreation(stageRef: React.RefObject<Konva.Stage | null>) 
           };
           const newId = addShape(textShape);
           selectMultiple([newId]);
+          setTool('select');
           setIsDrawing(false);
           return;
 
@@ -142,6 +166,7 @@ export function useShapeCreation(stageRef: React.RefObject<Konva.Stage | null>) 
                 };
                 const newId = addShape(imageShape);
                 selectMultiple([newId]);
+                setTool('select');
               };
               img.src = event.target?.result as string;
             };
@@ -249,13 +274,14 @@ export function useShapeCreation(stageRef: React.RefObject<Konva.Stage | null>) 
         const { id: _, ...shapeWithoutId } = previewShape;
         const newId = addShape(shapeWithoutId);
         selectMultiple([newId]);
+        setTool('select');
       }
 
       setIsDrawing(false);
       setPreviewShape(null);
       startPosRef.current = null;
     },
-    [isDrawing, previewShape, addShape, selectMultiple]
+    [isDrawing, previewShape, addShape, selectMultiple, setTool]
   );
 
   return {

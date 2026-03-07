@@ -8,6 +8,7 @@ interface ToolStore {
   strokeWidth: number;
   fontSize: number;
   fontFamily: string;
+  snapToGrid: boolean;
 
   setTool: (tool: Tool) => void;
   setFillColor: (color: string) => void;
@@ -15,15 +16,17 @@ interface ToolStore {
   setStrokeWidth: (width: number) => void;
   setFontSize: (size: number) => void;
   setFontFamily: (family: string) => void;
+  setSnapToGrid: (snap: boolean) => void;
 }
 
 export const useToolStore = create<ToolStore>((set) => ({
   activeTool: 'select',
   fillColor: '#4a9eff',
   strokeColor: '#ffffff',
-  strokeWidth: 2,
+  strokeWidth: 0,
   fontSize: 24,
   fontFamily: 'Arial',
+  snapToGrid: true,
 
   setTool: (tool) => set({ activeTool: tool }),
   setFillColor: (color) => set({ fillColor: color }),
@@ -31,4 +34,5 @@ export const useToolStore = create<ToolStore>((set) => ({
   setStrokeWidth: (width) => set({ strokeWidth: width }),
   setFontSize: (size) => set({ fontSize: size }),
   setFontFamily: (family) => set({ fontFamily: family }),
+  setSnapToGrid: (snap) => set({ snapToGrid: snap }),
 }));
