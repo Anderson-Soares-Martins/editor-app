@@ -58,10 +58,13 @@ export function useShapeCreation(stageRef: React.RefObject<Konva.Stage | null>) 
   const handleMouseDown = useCallback(
     (e: Konva.KonvaEventObject<MouseEvent>) => {
       if (activeTool === 'select' || activeTool === 'pan') return;
-      if (e.target !== e.target.getStage()) return;
 
       const pos = getPointerPosition();
       if (!pos) return;
+
+      // Para retângulo, círculo e linha: só criar se clicou no stage (não em cima de outro shape)
+      const isDrawTool = activeTool === 'rectangle' || activeTool === 'circle' || activeTool === 'line';
+      if (isDrawTool && e.target !== e.target.getStage()) return;
 
       startPosRef.current = pos;
       setIsDrawing(true);
@@ -118,7 +121,7 @@ export function useShapeCreation(stageRef: React.RefObject<Konva.Stage | null>) 
             name: `Line ${getShapeCount('line')}`,
             points: [0, 0, 0, 0],
             stroke: strokeColor,
-            strokeWidth,
+            strokeWidth: strokeWidth > 0 ? strokeWidth : 2,
             lineCap: 'round',
             lineJoin: 'round',
           } as LineShape;

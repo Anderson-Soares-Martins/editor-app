@@ -12,6 +12,7 @@ interface ShapeRendererProps {
   onClick: (e: Konva.KonvaEventObject<MouseEvent>) => void;
   onDragEnd: (e: Konva.KonvaEventObject<DragEvent>) => void;
   onDragMove?: (e: Konva.KonvaEventObject<DragEvent>) => void;
+  onTextDblClick?: (e: Konva.KonvaEventObject<MouseEvent>) => void;
 }
 
 export function ShapeRenderer({
@@ -19,6 +20,7 @@ export function ShapeRenderer({
   onClick,
   onDragEnd,
   onDragMove,
+  onTextDblClick,
 }: ShapeRendererProps) {
   const commonProps = {
     id: shape.id,
@@ -43,7 +45,7 @@ export function ShapeRenderer({
     case 'line':
       return <LineShape shape={shape} {...commonProps} />;
     case 'text':
-      return <TextShape shape={shape} {...commonProps} />;
+      return <TextShape shape={shape} {...commonProps} onDblClick={onTextDblClick} />;
     case 'image':
       return <ImageShape shape={shape} {...commonProps} />;
     default:

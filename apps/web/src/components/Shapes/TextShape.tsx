@@ -15,6 +15,7 @@ interface TextShapeProps {
   onClick: (e: Konva.KonvaEventObject<MouseEvent>) => void;
   onTap: (e: Konva.KonvaEventObject<MouseEvent>) => void;
   onDragEnd: (e: Konva.KonvaEventObject<DragEvent>) => void;
+  onDblClick?: (e: Konva.KonvaEventObject<MouseEvent>) => void;
 }
 
 export function TextShape({
@@ -30,6 +31,7 @@ export function TextShape({
   onClick,
   onTap,
   onDragEnd,
+  onDblClick,
 }: TextShapeProps) {
   return (
     <Text
@@ -50,6 +52,7 @@ export function TextShape({
       draggable={draggable}
       onClick={onClick}
       onTap={onTap}
+      onDblClick={onDblClick}
       onDragEnd={onDragEnd}
     />
   );

@@ -1,10 +1,10 @@
 import { useEffect, useRef, useCallback, useState, useMemo } from 'react';
-import { Transformer, Rect, Group } from 'react-konva';
+import { Transformer, Rect, Group, Circle } from 'react-konva';
 import type Konva from 'konva';
 import type { Box } from 'konva/lib/shapes/Transformer';
 import { useCanvasStore, useToolStore } from '@/store';
-import type { Shape } from '@editor-app/shared';
-import { snapRect } from '@/utils/snap';
+import type { Shape, LineShape as LineShapeType } from '@editor-app/shared';
+import { snapRect, snapPoint } from '@/utils/snap';
 
 // Seta semicírculo dupla (curved double arrow) — path from viewBox 0 0 800 272, center (400,136)
 const ROTATE_ICON_PATH =
@@ -74,13 +74,23 @@ export function SelectionTransformer({
     };
   }, []);
 
+  // Linhas não usam o Transformer; usam duas alças nas pontas
+  const lineShapes = useMemo(
+    () => selectedShapes.filter((s): s is LineShapeType => s.type === 'line'),
+    [selectedShapes]
+  );
+  const nonLineShapes = useMemo(
+    () => selectedShapes.filter((s) => s.type !== 'line'),
+    [selectedShapes]
+  );
+
   useEffect(() => {
     if (!transformerRef.current || !stageRef.current) return;
 
     const stage = stageRef.current;
     const nodes: Konva.Node[] = [];
 
-    selectedShapes.forEach((shape) => {
+    nonLineShapes.forEach((shape) => {
       const node = stage.findOne(`#${shape.id}`);
       if (node) {
         nodes.push(node);
@@ -89,7 +99,7 @@ export function SelectionTransformer({
 
     transformerRef.current.nodes(nodes);
     transformerRef.current.getLayer()?.batchDraw();
-  }, [selectedShapes, stageRef]);
+  }, [nonLineShapes, stageRef]);
 
   const handleTransformEnd = useCallback(() => {
     if (!stageRef.current) return;
@@ -252,14 +262,14 @@ export function SelectionTransformer({
     anchor.hitStrokeWidth(10);
   }, []);
 
-  // Compute rotation zone positions from shape data
+  // Compute rotation zone positions from shape data (apenas formas que usam transformer, não linhas)
   const rotZoneData = useMemo(() => {
-    if (selectedShapes.length === 0) return null;
+    if (nonLineShapes.length === 0) return null;
 
     const zoneSize = 20 / viewport.scale;
 
-    if (selectedShapes.length === 1) {
-      const shape = selectedShapes[0];
+    if (nonLineShapes.length === 1) {
+      const shape = nonLineShapes[0];
 
       if (shape.type === 'circle') {
         const rx = shape.radiusX;
@@ -303,7 +313,7 @@ export function SelectionTransformer({
       minY = Infinity,
       maxX = -Infinity,
       maxY = -Infinity;
-    selectedShapes.forEach((shape) => {
+    nonLineShapes.forEach((shape) => {
       if (shape.type === 'circle') {
         minX = Math.min(minX, shape.x - shape.radiusX);
         minY = Math.min(minY, shape.y - shape.radiusY);
@@ -337,7 +347,7 @@ export function SelectionTransformer({
       ],
       zoneSize,
     };
-  }, [selectedShapes, viewport.scale]);
+  }, [nonLineShapes, viewport.scale]);
 
   // Start rotation on mousedown in a rotation zone
   const handleRotateStart = useCallback(
@@ -536,10 +546,91 @@ export function SelectionTransformer({
     }
   }, [stageRef]);
 
+  const handleLineHandleDragMove = useCallback(
+    (lineShape: LineShapeType, handleIndex: 0 | 1, x: number, y: number) => {
+      const [, , dx, dy] = lineShape.points;
+      if (snapToGrid && !altHeldRef.current) {
+        const snapped = snapPoint({ x, y });
+        x = snapped.x;
+        y = snapped.y;
+      }
+      if (handleIndex === 0) {
+        const endX = lineShape.x + dx;
+        const endY = lineShape.y + dy;
+        updateShape(lineShape.id, {
+          x,
+          y,
+          points: [0, 0, endX - x, endY - y],
+        });
+      } else {
+        updateShape(lineShape.id, {
+          points: [0, 0, x - lineShape.x, y - lineShape.y],
+        });
+      }
+    },
+    [updateShape, snapToGrid]
+  );
+
+  const handleLineHandleDragEnd = useCallback(
+    (lineShape: LineShapeType, handleIndex: 0 | 1, x: number, y: number) => {
+      handleLineHandleDragMove(lineShape, handleIndex, x, y);
+    },
+    [handleLineHandleDragMove]
+  );
+
   if (selectedShapes.length === 0) return null;
+
+  const lineHandleSize = Math.max(8 / viewport.scale, 6);
 
   return (
     <>
+      {lineShapes.map((lineShape) => {
+        const [,, px, py] = lineShape.points;
+        const x1 = lineShape.x;
+        const y1 = lineShape.y;
+        const x2 = lineShape.x + px;
+        const y2 = lineShape.y + py;
+        return (
+          <Group key={lineShape.id}>
+            <Circle
+              x={x1}
+              y={y1}
+              radius={lineHandleSize}
+              fill="#ffffff"
+              stroke="#4a9eff"
+              strokeWidth={2}
+              draggable
+              onDragMove={(e) => {
+                const node = e.target;
+                handleLineHandleDragMove(lineShape, 0, node.x(), node.y());
+              }}
+              onDragEnd={(e) => {
+                const node = e.target;
+                handleLineHandleDragEnd(lineShape, 0, node.x(), node.y());
+              }}
+              onMouseDown={(e) => e.cancelBubble = true}
+            />
+            <Circle
+              x={x2}
+              y={y2}
+              radius={lineHandleSize}
+              fill="#ffffff"
+              stroke="#4a9eff"
+              strokeWidth={2}
+              draggable
+              onDragMove={(e) => {
+                const node = e.target;
+                handleLineHandleDragMove(lineShape, 1, node.x(), node.y());
+              }}
+              onDragEnd={(e) => {
+                const node = e.target;
+                handleLineHandleDragEnd(lineShape, 1, node.x(), node.y());
+              }}
+              onMouseDown={(e) => e.cancelBubble = true}
+            />
+          </Group>
+        );
+      })}
       {rotZoneData && (
         <Group
           x={rotZoneData.groupX}

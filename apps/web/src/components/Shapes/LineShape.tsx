@@ -38,7 +38,7 @@ export function LineShape({
       y={y}
       points={shape.points}
       stroke={shape.stroke}
-      strokeWidth={shape.strokeWidth}
+      strokeWidth={Math.max(shape.strokeWidth || 0, 1)}
       lineCap={shape.lineCap}
       lineJoin={shape.lineJoin}
       rotation={rotation}
